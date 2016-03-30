@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""Posts a random Kepler Target Pixel File (TPF) to Twitter.
+"""Posts a random Kepler Target Pixel File (TPF) as an animated gif on Twitter.
 
 Author: Geert Barentsen
 """
@@ -8,6 +7,7 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
 import random
+import sys
 from twython import Twython
 
 from astropy import log
@@ -36,12 +36,15 @@ def generate_tweet(tpf_fn=None, movie_length=120):
     """
     # Open the Target Pixel File
     if tpf_fn is None:  # Get a random url
-        db = KeplerArchiveCrawlerDB('c4-fits-urls.txt')
+        db = KeplerArchiveCrawlerDB('tpf-urls/latest-tpf-urls.txt')
         tpf_fn = db.random_url()
     log.info('Opening {0}'.format(tpf_fn))
     tpf = TargetPixelFile(tpf_fn, cache=False)
     log.info('KEPMAG = {0}, DIM = {1}'.format(tpf.hdulist[0].header['KEPMAG'],
                                               tpf.hdulist[1].header['TDIM5']))
+    # Don't tweet tiny strips
+    if (tpf.hdulist[2].header['NAXIS1'] < 3) or (tpf.hdulist[2].header['NAXIS2'] < 3):
+        raise Exception('Tiny strip')
     # Files contain occasional bad frames, so we make multiple attempts
     # with random starting points
     attempt_no = 0
@@ -57,11 +60,12 @@ def generate_tweet(tpf_fn=None, movie_length=120):
             except Exception:
                 kepmag = ''
             simbad = ("http://simbad.u-strasbg.fr/simbad/sim-coo?"
-                      "output.format=HTML&Coord={0}{1}&Radius=0.5".format(ra[0:8], dec[0:9]))
+                      "output.format=HTML&"
+                      "Coord={0}{1}&Radius=0.5".format(ra[0:8], dec[0:9]))
             status = "{0} (RA {1}, Dec {2}{3}). {4}".format(
-                        tpf.target, ra[0:8], dec[0:9], kepmag, simbad)
+                           tpf.target, ra[0:8], dec[0:9], kepmag, simbad)
             log.info(status)
-            # Creat the animated gif
+            # Create the animated gif
             #gif_fn = tpf_fn.split('/')[-1] + '.gif'
             gif_fn = '/tmp/keplerbot.gif'
             tpf.save_movie(gif_fn, start=start, stop=start + movie_length,
@@ -88,7 +92,10 @@ if __name__ == '__main__':
         attempt_no += 1
         try:
             status, gif, tpf = generate_tweet()
-            twitter, response = post_tweet(status, gif)
+            if 'test' in sys.argv:
+                print('Running in test mode -- not posting to Twitter.')
+            else:
+                twitter, response = post_tweet(status, gif)
             break
         except Exception as e:
             log.warning(e)

@@ -1,7 +1,21 @@
-# KeplerBot
+# @KeplerBot
 
-This is the `keplerbot` branch of the `k2flix` package,
-which contains the script used to run @KeplerBot on Twitter.
+This repo contains the `keplerbot.py` script that is used
+by @KeplerBot to post animated gifs of Kepler/K2 data on Twitter.
 
-For all other files relating to the `k2flix` package,
-please consult the master branch.
+## Usage
+
+```
+python keplerbot.py
+```
+
+## Requirements
+
+You need to add a `secrets.py` file in the same directory containing your
+Twitter API secrets.
+
+You will also need the following Python packages:
+
+* astropy
+* k2flix
+* twython
