@@ -5,8 +5,15 @@ by @KeplerBot to post animated gifs of Kepler/K2 data on Twitter.
 
 ## Usage
 
+To send a tweet:
 ```
 python keplerbot.py
+```
+
+To obtain a list of Target Pixel File URLs to tweet:
+```
+cd tpf-urls
+python save-urls.py CAMPAIGN_NUMBER
 ```
 
 ## Requirements
@@ -19,3 +26,4 @@ You will also need the following Python packages:
 * astropy
 * k2flix
 * twython
+
