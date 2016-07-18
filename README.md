@@ -5,7 +5,12 @@ by @KeplerBot to post animated gifs of Kepler/K2 data on Twitter.
 
 ## Usage
 
-To send a tweet:
+To generate a test tweet:
+```
+python keplerbot.py test
+```
+
+To send an actual tweet:
 ```
 python keplerbot.py
 ```
