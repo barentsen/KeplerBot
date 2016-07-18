@@ -52,21 +52,19 @@ def generate_tweet(tpf_fn=None, movie_length=120):
         attempt_no += 1
         try:
             start = random.randint(0, tpf.no_frames - movie_length)
-            crd = SkyCoord(tpf.ra, tpf.dec, unit='deg')
-            ra, dec = crd.to_string('hmsdms', sep=':').split()
             try:
-                kepmag = ', KepMag {0:.1f}'.format(float(
-                         tpf.hdulist[0].header['KEPMAG']))
+                kepmag = '🔆 Kp {:.1f}.\n'.format(float(tpf.hdulist[0].header['KEPMAG']))
             except Exception:
                 kepmag = ''
-            simbad = ("http://simbad.u-strasbg.fr/simbad/sim-coo?"
-                      "output.format=HTML&"
-                      "Coord={0}{1}&Radius=0.5".format(ra[0:8], dec[0:9]))
-            status = "{0} (RA {1}, Dec {2}{3}). {4}".format(
-                           tpf.target, ra[0:8], dec[0:9], kepmag, simbad)
+            timestr = tpf.timestamp(start).split(' ')[0]
+            url = "https://archive.stsci.edu/k2/data_search/search.php?ktc_k2_id={}&action=Search".format(tpf.target.split(' ')[1])
+            status = ('New Kepler/K2 data has recently been released!\n'
+                      '🔎 {}.\n'
+                      '{}'
+                      '⌚ {}.\n'
+                      '🔗 {}'.format(tpf.target, kepmag, timestr, url))
             log.info(status)
             # Create the animated gif
-            #gif_fn = tpf_fn.split('/')[-1] + '.gif'
             gif_fn = '/tmp/keplerbot.gif'
             tpf.save_movie(gif_fn, start=start, stop=start + movie_length,
                            step=1, fps=8, min_percent=0., max_percent=93.,
