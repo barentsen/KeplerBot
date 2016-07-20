@@ -57,12 +57,13 @@ def generate_tweet(tpf_fn=None, movie_length=120):
             except Exception:
                 kepmag = ''
             timestr = tpf.timestamp(start).split(' ')[0]
+            campaign = tpf.hdulist[0].header['CAMPAIGN']
             url = "https://archive.stsci.edu/k2/data_search/search.php?ktc_k2_id={}&action=Search".format(tpf.target.split(' ')[1])
             status = ('New Kepler/K2 data were recently released!\n'
                       '🔎 {}\n'
-                      '🗓 {}\n'
+                      '🗓 {} (C{})\n'
                       '{}'
-                      '🔗 {}'.format(tpf.target, timestr, kepmag, url))
+                      '🔗 {}'.format(tpf.target, timestr, campaign, kepmag, url))
             log.info(status)
             # Create the animated gif
             gif_fn = '/tmp/keplerbot.gif'
