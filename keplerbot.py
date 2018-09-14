@@ -19,7 +19,7 @@ from k2flix.crawler import KeplerArchiveCrawlerDB
 from secrets import *
 
 
-def generate_tweet(tpf_fn=None, movie_length=120):
+def generate_tweet(tpf_fn=None, movie_length=80):
     """Generate a status message and animated gif.
 
     Parameters
@@ -27,7 +27,7 @@ def generate_tweet(tpf_fn=None, movie_length=120):
     tpf_fn : str (optional)
         Path or url to a TPF file. If `None`, a random file will be downloaded.
 
-    move_length : int (optional)
+    movie_length : int (optional)
         Number of frames in the animation.
 
     Returns
@@ -58,12 +58,12 @@ def generate_tweet(tpf_fn=None, movie_length=120):
                 kepmag = ''
             timestr = tpf.timestamp(start).split(' ')[0]
             campaign = tpf.hdulist[0].header['CAMPAIGN']
-            url = "https://archive.stsci.edu/k2/data_search/search.php?ktc_k2_id={}&action=Search".format(tpf.target.split(' ')[1])
+            url = "https://archive.stsci.edu/k2/data_search/search.php?ktc_k2_id={}&action=Search".format(tpf.objectname.split(' ')[1])
             status = ('New Kepler/K2 data were recently released!\n'
                       '🔎 {}\n'
                       '🗓 {} (C{})\n'
                       '{}'
-                      '🔗 {}'.format(tpf.target, timestr, campaign, kepmag, url))
+                      '🔗 {}'.format(tpf.objectname, timestr, campaign, kepmag, url))
             log.info(status)
             # Create the animated gif
             gif_fn = '/tmp/keplerbot.gif'
@@ -86,7 +86,7 @@ def post_tweet(status, gif):
 
 
 if __name__ == '__main__':
-    attempt_no = 0
+    attempt_no = 9
     while attempt_no < 10:
         attempt_no += 1
         try:
